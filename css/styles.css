@@ -1,0 +1,236 @@
+/* ==========================================================================
+   CardioAlerta AI — Estilos Personalizados y Animaciones Bioeléctricas
+   Universidad Militar Nueva Granada (UMNG) · Ingeniería Biomédica
+   ========================================================================== */
+
+:root {
+  --bg-warm: #EBE9E8;
+  --bg-white: #FFFFFF;
+  --coral-primary: #EA434E;
+  --coral-hover: #D0323D;
+  --coral-soft: #FCE8E9;
+  --text-charcoal: #141414;
+  --text-slate: #4B5563;
+  --monitor-bg: #0F172A;
+  --monitor-grid: #1E293B;
+  --ecg-normal: #10B981;
+  --ecg-ischemia: #EF4444;
+  --telemetry-cyan: #06B6D4;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--text-charcoal);
+  background-color: var(--bg-warm);
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  background-color: var(--bg-warm);
+  color: var(--text-charcoal);
+}
+
+.font-mono-clinical {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-feature-settings: "tnum" on, "zero" on;
+}
+
+/* Botones táctiles accesibles para móvil (Criterio de Aceptación #3) */
+.touch-target {
+  min-height: 48px;
+}
+
+/* Animación de latido sutil para el ícono principal */
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  14% { transform: scale(1.16); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.1); }
+  70% { transform: scale(1); }
+}
+
+.animate-heartbeat {
+  animation: heartbeat 2.2s infinite ease-in-out;
+}
+
+/* Pulso de telemetría BLE y alertas */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.9;
+  }
+  70% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+.ble-dot-ring::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 9999px;
+  background-color: var(--telemetry-cyan);
+  animation: pulse-ring 2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+}
+
+/* Alerta roja estroboscópica suave cuando hay elevación del ST */
+@keyframes alert-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.35), 0 10px 30px -5px rgba(239, 68, 68, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.12), 0 15px 35px -5px rgba(239, 68, 68, 0.45);
+  }
+}
+
+.alert-priority-card {
+  animation: alert-glow 2s infinite ease-in-out;
+}
+
+/* Monitor Clínico y Cuadrícula Milimetrada de Respaldo */
+.clinical-monitor-shell {
+  background: radial-gradient(circle at 50% 0%, #172542 0%, #0F172A 72%);
+  box-shadow:
+    0 25px 50px -12px rgba(15, 23, 42, 0.55),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+}
+
+.ecg-canvas-wrapper {
+  position: relative;
+  background-color: #0F172A;
+  background-image:
+    linear-gradient(to right, rgba(30, 41, 59, 0.55) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(30, 41, 59, 0.55) 1px, transparent 1px),
+    linear-gradient(to right, rgba(51, 65, 85, 0.45) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(51, 65, 85, 0.45) 1px, transparent 1px);
+  background-size: 6px 6px, 6px 6px, 30px 30px, 30px 30px;
+}
+
+/* Scanline sutil médica sobre el monitor */
+.ecg-canvas-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(15, 23, 42, 0) 0%,
+    rgba(6, 182, 212, 0.02) 50%,
+    rgba(15, 23, 42, 0.18) 100%
+  );
+  border-radius: inherit;
+}
+
+/* Esquema Interactivo por Capas (Vista Explosiva SVG) */
+.prototype-stage {
+  background: radial-gradient(circle at 50% 35%, #1E293B 0%, #0F172A 78%);
+}
+
+.svg-layer-group {
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease, filter 0.35s ease;
+  cursor: pointer;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.svg-layer-group:hover {
+  filter: drop-shadow(0 0 12px rgba(234, 67, 78, 0.45));
+}
+
+.svg-layer-group.layer-active {
+  filter: drop-shadow(0 0 18px rgba(234, 67, 78, 0.75));
+}
+
+.svg-layer-group.layer-dimmed {
+  opacity: 0.48;
+}
+
+/* Modo compacto vs explosivo del SVG */
+.prototype-svg.mode-compact .layer-1 { transform: translateY(58px); }
+.prototype-svg.mode-compact .layer-2 { transform: translateY(28px); }
+.prototype-svg.mode-compact .layer-3 { transform: translateY(0px); }
+.prototype-svg.mode-compact .layer-4 { transform: translateY(-28px); }
+.prototype-svg.mode-compact .layer-5 { transform: translateY(-56px); }
+
+/* Elevación adicional cuando una capa está seleccionada en vista explosiva */
+.prototype-svg:not(.mode-compact) .svg-layer-group.layer-active {
+  transform: translateY(-8px) scale(1.03);
+}
+
+/* Puntos calientes (Hotspots 1-5) */
+.hotspot-btn {
+  min-width: 48px;
+  min-height: 48px;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hotspot-btn.active {
+  background-color: var(--coral-primary);
+  color: #FFFFFF;
+  border-color: #FFFFFF;
+  transform: scale(1.08);
+  box-shadow: 0 0 0 6px rgba(234, 67, 78, 0.28), 0 10px 20px -5px rgba(234, 67, 78, 0.5);
+}
+
+/* Tarjetas de forma orgánica inspiradas en la infografía */
+.card-organic {
+  transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+}
+
+.card-organic:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 35px -10px rgba(20, 20, 20, 0.08);
+}
+
+/* Barra de progreso del triaje en 15s */
+@keyframes shimmer-progress {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.triage-progress-fill {
+  background: linear-gradient(90deg, #EA434E 0%, #FB7185 50%, #EF4444 100%);
+  background-size: 200% 100%;
+  animation: shimmer-progress 2s linear infinite;
+  transition: width 0.12s linear;
+}
+
+/* Onda decorativa bioeléctrica en el Hero */
+@keyframes dash-flow {
+  to {
+    stroke-dashoffset: -240;
+  }
+}
+
+.hero-ecg-path {
+  stroke-dasharray: 120 120;
+  animation: dash-flow 3.5s linear infinite;
+}
+
+/* Scrollbar limpia */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #EBE9E8;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
